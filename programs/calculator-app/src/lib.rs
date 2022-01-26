@@ -10,35 +10,28 @@ pub mod calculator_app {
         calculator.greeting = init_message;
         Ok(())
     }
-
-    pub fn add(ctx: Context<Addition>, num1: i64, num2: i64) -> ProgramResult {
+    // Imperative approach
+    pub fn exec(ctx: Context<Operation>, operation: String, num1: i64, num2: i64) -> ProgramResult {
         let calculator = &mut ctx.accounts.calculator;
-        calculator.result = num1 + num2;
-        Ok(())
-    }
-
-    pub fn multiply(ctx: Context<Multiplication>, num1: i64, num2: i64) -> ProgramResult {
-        let calculator = &mut ctx.accounts.calculator;
-        calculator.result = num1 * num2;
-        Ok(())
-    }
-
-    pub fn subtract(ctx: Context<Subtraction>, num1: i64, num2: i64) -> ProgramResult {
-        let calculator = &mut ctx.accounts.calculator;
-        calculator.result = num1 - num2;
-        Ok(())
-    }
-
-    pub fn divide(ctx: Context<Division>, num1: i64, num2: i64) -> ProgramResult {
-        let calculator = &mut ctx.accounts.calculator;
-        calculator.result = num1 / num2;
-        calculator.remainder = num1 % num2;
+        match &*operation.to_lowercase() {
+            "add" => {
+                calculator.result = num1 + num2;
+            },
+            "minus" => {
+                calculator.result = num1 - num2;
+            },
+            "multiply" => {
+                calculator.result = num1 * num2;
+            },
+            "divide" => {
+                calculator.result = num1 / num2;
+                calculator.remainder = num1 % num2;
+            },
+            _ => println!("Well, supported commands are 'add', 'minus', 'multiply' or 'divide'"),
+        }
         Ok(())
     }
 }
-
-// #[derive(Accounts)]
-// pub struct Initialize {}
 
 #[derive(Accounts)]
 pub struct Create<'info> {
@@ -50,28 +43,7 @@ pub struct Create<'info> {
 }
 
 #[derive(Accounts)]
-pub struct Addition<'info> {
-    #[account(mut)]
-    pub calculator: Account<'info, Calculator>,
-
-}
-
-#[derive(Accounts)]
-pub struct Multiplication<'info> {
-    #[account(mut)]
-    pub calculator: Account<'info, Calculator>,
-
-}
-
-#[derive(Accounts)]
-pub struct Subtraction<'info> {
-    #[account(mut)]
-    pub calculator: Account<'info, Calculator>,
-
-}
-
-#[derive(Accounts)]
-pub struct Division<'info> {
+pub struct Operation<'info> {
     #[account(mut)]
     pub calculator: Account<'info, Calculator>,
 
